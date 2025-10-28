@@ -4,7 +4,7 @@ import "@stream-io/video-react-sdk/dist/css/styles.css";
 import "./styles.css";
 import ConnectForm, { type ConnectFormData } from "./ConnectForm";
 import VideoCall from "./VideoCall";
-import Chat from "./Chat";
+import ChatWindow from "./ChatWindow.tsx";
 
 export default function App() {
     // Streaming state
@@ -89,7 +89,7 @@ export default function App() {
                     isConnecting={isConnecting}
                     error={error}
                 />
-                {formData && <Chat formData={formData} />}
+                {formData && <ChatWindow formData={formData} />}
             </>
         );
     }
@@ -103,7 +103,7 @@ export default function App() {
                 onDisconnect={handleDisconnect}
                 isDisconnecting={isConnecting}
             />
-            {formData && <Chat formData={formData} />}
+            {formData && <ChatWindow formData={formData} />}
         </>
     );
 }
