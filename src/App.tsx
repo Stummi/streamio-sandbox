@@ -68,6 +68,8 @@ export default function App() {
             if (client) {
                 await client.disconnectUser();
             }
+        } catch (error) {
+            console.error("Error during disconnect:", error);
         } finally {
             setCall(undefined);
             setClient(undefined);
