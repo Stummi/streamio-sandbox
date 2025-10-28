@@ -4,6 +4,7 @@ import "@stream-io/video-react-sdk/dist/css/styles.css";
 import "./styles.css";
 import ConnectForm, { type ConnectFormData } from "./ConnectForm";
 import VideoCall from "./VideoCall";
+import Chat from "./Chat";
 
 export default function App() {
     // Streaming state
@@ -11,10 +12,12 @@ export default function App() {
     const [call, setCall] = useState<Call>();
     const [isConnecting, setIsConnecting] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [formData, setFormData] = useState<ConnectFormData | null>(null);
 
     // Create & join on demand
     const handleConnect = useCallback(async (formData: ConnectFormData) => {
         setError(null);
+        setFormData(formData);
 
         const { apiKey, callId, userId, token } = formData;
 
@@ -80,21 +83,27 @@ export default function App() {
     // Show form until connected
     if (!client || !call) {
         return (
-            <ConnectForm
-                onConnect={handleConnect}
-                isConnecting={isConnecting}
-                error={error}
-            />
+            <>
+                <ConnectForm
+                    onConnect={handleConnect}
+                    isConnecting={isConnecting}
+                    error={error}
+                />
+                {formData && <Chat formData={formData} />}
+            </>
         );
     }
 
     // Connected: render the Stream components
     return (
-        <VideoCall
-            client={client}
-            call={call}
-            onDisconnect={handleDisconnect}
-            isDisconnecting={isConnecting}
-        />
+        <>
+            <VideoCall
+                client={client}
+                call={call}
+                onDisconnect={handleDisconnect}
+                isDisconnecting={isConnecting}
+            />
+            {formData && <Chat formData={formData} />}
+        </>
     );
 }
