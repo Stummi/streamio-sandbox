@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export interface ConnectFormData {
     apiKey: string;
@@ -13,11 +13,36 @@ interface ConnectFormProps {
     error: string | null;
 }
 
+const STORAGE_KEY = "streamio-connect-form";
+
+const getStoredValue = (key: string, defaultValue: string): string => {
+    try {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) {
+            const parsed = JSON.parse(stored);
+            return parsed[key] ?? defaultValue;
+        }
+    } catch (error) {
+        console.warn("Failed to load from localStorage:", error);
+    }
+    return defaultValue;
+};
+
 export default function ConnectForm({ onConnect, isConnecting, error }: ConnectFormProps) {
-    const [apiKey, setApiKey] = useState("");
-    const [callId, setCallId] = useState("foobar");
-    const [userId, setUserId] = useState("user_id");
-    const [token, setToken] = useState("");
+    const [apiKey, setApiKey] = useState(() => getStoredValue("apiKey", ""));
+    const [callId, setCallId] = useState(() => getStoredValue("callId", "foobar"));
+    const [userId, setUserId] = useState(() => getStoredValue("userId", "user_id"));
+    const [token, setToken] = useState(() => getStoredValue("token", ""));
+
+    // Save form data to localStorage whenever any value changes
+    useEffect(() => {
+        try {
+            const formData = { apiKey, callId, userId, token };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
+        } catch (error) {
+            console.warn("Failed to save to localStorage:", error);
+        }
+    }, [apiKey, callId, userId, token]);
 
     const handleSubmit = () => {
         onConnect({ apiKey, callId, userId, token });
